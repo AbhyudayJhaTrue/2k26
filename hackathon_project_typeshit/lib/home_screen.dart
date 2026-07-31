@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'models/assignment.dart';
+import 'screens/student/assignment_screen.dart';
+import 'screens/student/club_events_screen.dart';
+import 'screens/student/student_dashboard.dart';
+import 'screens/student/student_voice_screen.dart';
+import 'screens/student/suggestion_hub.dart';
 
 // ---------------------------------------------------------------------------
-// HOME SCREEN (basic placeholder)
-// Same background style as the sign-in page, with a top bar greeting the
-// user by name and showing their role underneath.
-// No other widgets yet — add your dashboard content below the top bar later.
+// HOME SCREEN
+// A simple dashboard landing page with quick action cards for the new screens.
 // ---------------------------------------------------------------------------
 
 class HomeScreen extends StatelessWidget {
@@ -62,26 +66,148 @@ class HomeScreen extends StatelessWidget {
                             fontSize: 14,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withAlpha(204),
                           ),
                         ),
                       ],
                     ),
                     CircleAvatar(
                       radius: 22,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withAlpha(51),
                       child: const Icon(Icons.person, color: Colors.white),
                     ),
                   ],
                 ),
               ),
 
-              // ---- Empty body — add widgets here later ----
-              const Expanded(child: SizedBox.shrink()),
+              // ---- Quick action cards ----
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(20),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Quick Actions',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.1,
+                            children: [
+                              _buildActionCard(
+                                context,
+                                icon: Icons.task_alt,
+                                label: 'Assignments',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const AssignmentScreen(assignments: <Assignment>[]),
+                                  ),
+                                ),
+                              ),
+                              _buildActionCard(
+                                context,
+                                icon: Icons.event,
+                                label: 'Clubs & Events',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ClubsEventsScreen(),
+                                  ),
+                                ),
+                              ),
+                              _buildActionCard(
+                                context,
+                                icon: Icons.lightbulb,
+                                label: 'Suggestion Hub',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const SuggestionHubScreen(),
+                                  ),
+                                ),
+                              ),
+                              _buildActionCard(
+                                context,
+                                icon: Icons.mic,
+                                label: 'Student Voice',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const StudentVoiceScreen(),
+                                  ),
+                                ),
+                              ),
+                              _buildActionCard(
+                                context,
+                                icon: Icons.dashboard,
+                                label: 'Dashboard',
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => StudentDashboard(studentName: name),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-}
+  Widget _buildActionCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withAlpha(31),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.white.withAlpha(46)),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white24,
+              child: Icon(icon, color: Colors.white, size: 22),
+            ),
+            const Spacer(),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }}

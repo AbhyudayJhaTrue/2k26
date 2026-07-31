@@ -5,6 +5,9 @@ import '../../models/calendar_event.dart';
 import '../../models/discovery_quest.dart';
 import '../../models/class_feed_post.dart';
 import 'assignment_screen.dart';
+import 'club_events_screen.dart';
+import 'student_voice_screen.dart';
+import 'suggestion_hub.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -248,13 +251,31 @@ class StudentDashboard extends StatelessWidget {
                           ),
                         );
                       }),
+                      _quickAction(context, '🏫', 'Clubs', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ClubsEventsScreen(),
+                          ),
+                        );
+                      }),
+                      _quickAction(context, '💡', 'Suggestions', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SuggestionHubScreen(),
+                          ),
+                        );
+                      }),
+                      _quickAction(context, '🎤', 'Student Voice', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const StudentVoiceScreen(),
+                          ),
+                        );
+                      }),
                       _quickAction(context, '🔬', 'Research', () {}),
                       _quickAction(context, '🏆', 'Quests', () {}),
-                      _quickAction(context, '💬', 'Chat', () {}),
                       _quickAction(context, '📢', 'Feed', () {}),
                       _quickAction(context, '📋', 'Notices', () {}),
-                      _quickAction(context, '📅', 'Calendar', () {}),
-                      _quickAction(context, '👤', 'Profile', () {}),
                     ],
                   ),
 
