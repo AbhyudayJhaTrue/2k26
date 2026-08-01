@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/assignment.dart';
 import 'screens/student/assignment_screen.dart';
+import 'screens/student/campus_chat_screen.dart';
 import 'screens/student/club_events_screen.dart';
 import 'screens/student/research_hub_screen.dart';
 import 'screens/student/student_dashboard.dart';
@@ -170,6 +171,16 @@ class HomeScreen extends StatelessWidget {
                                     onTap: () => Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (_) => const ResearchHubScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.chat_bubble,
+                                    label: 'Campus Chat',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const CampusChatScreen(),
                                       ),
                                     ),
                                   ),

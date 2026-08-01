@@ -16,7 +16,8 @@ import '../../models/discovery_quest.dart';
 /// models. Completion is held locally by this screen, so it never mutates
 /// `DummyData` or unexpectedly changes another screen using that same data.
 class DiscoveryQuestScreen extends StatefulWidget {
-  const DiscoveryQuestScreen({super.key});
+  final String? currentUserName;
+  const DiscoveryQuestScreen({super.key, this.currentUserName});
 
 
   @override
@@ -396,57 +397,61 @@ class _DiscoveryQuestScreenState extends State<DiscoveryQuestScreen>
 
   List<LeaderboardEntry> get _leaderboard {
     final students = kUserDatabase.where((user) => user.role == 'Student').toList();
-    final entries = <LeaderboardEntry>[
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Pranav', orElse: () => students.first).name,
-        initials: _initials('Pranav'),
-        xp: _xp,
-        badges: _earnedBadges.length,
-        rankChange: 0,
-        weeklyXp: _weeklyXp,
-        isCurrentUser: true,
-      ),
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Adhvik', orElse: () => students.first).name,
-        initials: _initials('Adhvik'),
-        xp: 1100,
-        badges: 2,
-        rankChange: 1,
-        weeklyXp: 90,
-      ),
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Aanya', orElse: () => students.first).name,
-        initials: _initials('Aanya'),
-        xp: 1050,
-        badges: 2,
-        rankChange: -1,
-        weeklyXp: 75,
-      ),
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Abhyudhay', orElse: () => students.first).name,
-        initials: _initials('Abhyudhay'),
-        xp: 980,
-        badges: 2,
-        rankChange: 1,
-        weeklyXp: 60,
-      ),
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Kushagr', orElse: () => students.first).name,
-        initials: _initials('Kushagr'),
-        xp: 870,
-        badges: 1,
-        rankChange: 0,
-        weeklyXp: 40,
-      ),
-      LeaderboardEntry(
-        name: students.firstWhere((user) => user.name == 'Rohan', orElse: () => students.first).name,
-        initials: _initials('Rohan'),
-        xp: 760,
-        badges: 1,
-        rankChange: -1,
-        weeklyXp: 35,
-      ),
-    ];
+    final current = widget.currentUserName?.trim();
+
+    // sample order and fallback values used for demo leaderboard
+    final names = <String>['Pranav', 'Adhvik', 'Aanya', 'Abhyudhay', 'Kushagr', 'Rohan'];
+    if (current != null && current.isNotEmpty && !names.contains(current)) {
+      names.insert(0, current);
+    }
+
+    final sampleXp = {
+      'Pranav': _xp,
+      'Adhvik': 1100,
+      'Aanya': 1050,
+      'Abhyudhay': 980,
+      'Kushagr': 870,
+      'Rohan': 760,
+    };
+    final sampleWeekly = {
+      'Pranav': _weeklyXp,
+      'Adhvik': 90,
+      'Aanya': 75,
+      'Abhyudhay': 60,
+      'Kushagr': 40,
+      'Rohan': 35,
+    };
+    final sampleBadges = {
+      'Pranav': _earnedBadges.length,
+      'Adhvik': 2,
+      'Aanya': 2,
+      'Abhyudhay': 2,
+      'Kushagr': 1,
+      'Rohan': 1,
+    };
+    final sampleRankChange = {
+      'Pranav': 0,
+      'Adhvik': 1,
+      'Aanya': -1,
+      'Abhyudhay': 1,
+      'Kushagr': 0,
+      'Rohan': -1,
+    };
+
+    final entries = <LeaderboardEntry>[];
+    for (final name in names.take(6)) {
+      final isCurrent = current != null && name == current;
+      entries.add(LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == name, orElse: () => students.first).name,
+        initials: _initials(name),
+        xp: isCurrent ? _xp : (sampleXp[name] ?? 500),
+        badges: sampleBadges[name] ?? 1,
+        rankChange: sampleRankChange[name] ?? 0,
+        weeklyXp: isCurrent ? _weeklyXp : (sampleWeekly[name] ?? 30),
+        isCurrentUser: isCurrent,
+      ));
+    }
+
     entries.sort((a, b) => b.xp.compareTo(a.xp));
     return entries;
   }

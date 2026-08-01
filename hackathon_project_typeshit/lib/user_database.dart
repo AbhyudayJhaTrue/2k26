@@ -202,6 +202,95 @@ class ResearchResource {
   });
 }
 
+enum ChatRoomType {
+  classRoom('Class'),
+  club('Club'),
+  teacher('Teacher');
+
+  const ChatRoomType(this.label);
+  final String label;
+}
+
+enum MessageKind { text, assignment, event, poll, voice }
+enum Receipt { sent, delivered, read }
+enum AttachmentType { document, image, spreadsheet, video }
+
+class ChatRoom {
+  ChatRoom({
+    required this.name,
+    required this.emoji,
+    required this.type,
+    required this.members,
+    required this.online,
+    required this.lastMessage,
+    required this.lastSender,
+    required this.lastActivity,
+    required this.description,
+    required this.admin,
+    this.unread = 0,
+    this.isPinned = false,
+    this.announcement,
+  });
+
+  final String name, emoji, description, admin;
+  final ChatRoomType type;
+  final int members, online;
+  String lastMessage, lastSender;
+  DateTime lastActivity;
+  int unread;
+  bool isPinned;
+  final String? announcement;
+
+  String get timeLabel {
+    final difference = DateTime.now().difference(lastActivity);
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    return '${difference.inDays}d ago';
+  }
+}
+
+class ChatMessage {
+  ChatMessage({
+    required this.id,
+    required this.senderId,
+    required this.senderName,
+    required this.text,
+    required this.timestamp,
+    this.kind = MessageKind.text,
+    this.receipt = Receipt.read,
+    this.reaction,
+    this.replyTo,
+    this.attachment,
+    this.cardTitle,
+    this.cardSubtitle,
+    this.pollOptions,
+    this.voiceDuration,
+  });
+
+  final String id, senderId, senderName, text;
+  final DateTime timestamp;
+  final MessageKind kind;
+  final Receipt receipt;
+  String? reaction;
+  final ChatMessage? replyTo;
+  final AttachmentData? attachment;
+  final String? cardTitle, cardSubtitle, voiceDuration;
+  final List<String>? pollOptions;
+}
+
+class AttachmentData {
+  const AttachmentData(this.name, this.size, this.type);
+  final String name, size;
+  final AttachmentType type;
+
+  IconData get icon => switch (type) {
+        AttachmentType.document => Icons.picture_as_pdf_rounded,
+        AttachmentType.image => Icons.image_rounded,
+        AttachmentType.spreadsheet => Icons.table_chart_rounded,
+        AttachmentType.video => Icons.videocam_rounded,
+      };
+}
+
 // ---------------------------------------------------------------------------
 // USER DATABASE SINGLETON
 // ---------------------------------------------------------------------------
@@ -580,6 +669,141 @@ class UserDatabase extends ChangeNotifier {
       teacherApproved: true,
     ),
   ];
+
+  final List<ChatRoom> chatRooms = [
+    ChatRoom(
+      name: '9A General',
+      emoji: '🏫',
+      type: ChatRoomType.classRoom,
+      members: 28,
+      online: 14,
+      lastMessage: 'Show off 😂',
+      lastSender: 'Abhyudhay',
+      lastActivity: DateTime.now().subtract(const Duration(minutes: 2)),
+      unread: 2,
+      isPinned: true,
+      description: 'The official chat for Class 9A.',
+      admin: 'Mr. Jason',
+      announcement: 'Physics homework is due this Friday.',
+    ),
+    ChatRoom(
+      name: 'Computer Science Club',
+      emoji: '💻',
+      type: ChatRoomType.club,
+      members: 12,
+      online: 5,
+      lastMessage: 'Anyone done the Python task?',
+      lastSender: 'Pranav',
+      lastActivity: DateTime.now().subtract(const Duration(minutes: 15)),
+      isPinned: true,
+      description: 'Build, learn, and share great technology projects.',
+      admin: 'Mr. Jack',
+    ),
+    ChatRoom(
+      name: 'Math Help',
+      emoji: '📐',
+      type: ChatRoomType.club,
+      members: 8,
+      online: 2,
+      lastMessage: 'Quadratic formula explained',
+      lastSender: 'Aanya',
+      lastActivity: DateTime.now().subtract(const Duration(hours: 1)),
+      unread: 5,
+      description: 'A friendly place to ask and answer mathematics questions.',
+      admin: 'Aanya',
+    ),
+    ChatRoom(
+      name: 'Mr. Jack',
+      emoji: '👨‍🏫',
+      type: ChatRoomType.teacher,
+      members: 2,
+      online: 1,
+      lastMessage: 'Great work on the lab report!',
+      lastSender: 'Mr. Jack',
+      lastActivity: DateTime.now().subtract(const Duration(hours: 2)),
+      unread: 1,
+      description: 'Private school communication with your teacher.',
+      admin: 'Mr. Jack',
+    ),
+    ChatRoom(
+      name: 'Mr. Jason',
+      emoji: '🧑‍🏫',
+      type: ChatRoomType.teacher,
+      members: 2,
+      online: 0,
+      lastMessage: 'Check your feedback on the diagram',
+      lastSender: 'Mr. Jason',
+      lastActivity: DateTime.now().subtract(const Duration(days: 1)),
+      description: 'Private school communication with your teacher.',
+      admin: 'Mr. Jason',
+    ),
+  ];
+
+  /// Demo message history for a chat room. Every named sender here
+  /// corresponds to an existing account in [kUserDatabase].
+  List<ChatMessage> messagesForRoom(ChatRoom room) {
+    final now = DateTime.now();
+    return [
+      ChatMessage(
+        id: '1',
+        senderId: 'aanya',
+        senderName: 'Aanya',
+        text: 'Hi everyone! Has anyone started the physics report?',
+        timestamp: now.subtract(const Duration(days: 1, hours: 3)),
+      ),
+      ChatMessage(
+        id: '2',
+        senderId: 'me',
+        senderName: 'You',
+        text: 'I have the observations, I can share them.',
+        timestamp: now.subtract(const Duration(days: 1, hours: 2, minutes: 56)),
+        receipt: Receipt.read,
+      ),
+      if (room.type == ChatRoomType.classRoom)
+        ChatMessage(
+          id: '3',
+          senderId: 'teacher',
+          senderName: 'Mr. Jason',
+          text: '',
+          timestamp: now.subtract(const Duration(hours: 3)),
+          kind: MessageKind.assignment,
+          cardTitle: 'Physics Lab Report',
+          cardSubtitle: 'Friday, 8 August',
+        ),
+      if (room.type == ChatRoomType.classRoom)
+        ChatMessage(
+          id: '4',
+          senderId: 'teacher',
+          senderName: 'Mr. Jason',
+          text: '',
+          timestamp: now.subtract(const Duration(hours: 2, minutes: 40)),
+          kind: MessageKind.event,
+          cardTitle: 'Sports Day',
+          cardSubtitle: '9 August • School Ground',
+        ),
+      if (room.type != ChatRoomType.teacher)
+        ChatMessage(
+          id: '5',
+          senderId: 'teacher',
+          senderName: room.type == ChatRoomType.club ? 'Mr. Jack' : 'Mr. Jason',
+          text: '',
+          timestamp: now.subtract(const Duration(minutes: 35)),
+          kind: MessageKind.poll,
+          cardTitle: 'Which revision session works best?',
+          pollOptions: const ['Monday', 'Tuesday', 'Wednesday'],
+        ),
+      ChatMessage(
+        id: '6',
+        senderId: 'pranav',
+        senderName: 'Pranav',
+        text: room.lastMessage,
+        timestamp: now.subtract(const Duration(minutes: 10)),
+        attachment: room.type == ChatRoomType.classRoom
+            ? const AttachmentData('Physics_Lab_Report.pdf', '2.1 MB', AttachmentType.document)
+            : null,
+      ),
+    ];
+  }
 
   // --- DATABASE ACTIONS ---
 

@@ -10,6 +10,7 @@ import 'club_events_screen.dart';
 import 'student_voice_screen.dart';
 import 'suggestion_hub.dart';
 import 'discovery_quest_screen.dart';
+import 'campus_chat_screen.dart';
 import 'research_hub_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
@@ -280,7 +281,14 @@ class StudentDashboard extends StatelessWidget {
                       _quickAction(context, '🏆', 'Quests', () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const DiscoveryQuestScreen(),
+                            builder: (context) => DiscoveryQuestScreen(currentUserName: studentName),
+                          ),
+                        );
+                      }),
+                      _quickAction(context, '💬', 'Chat', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const CampusChatScreen(),
                           ),
                         );
                       }),
@@ -304,7 +312,7 @@ class StudentDashboard extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => const DiscoveryQuestScreen(),
+                        builder: (_) => DiscoveryQuestScreen(currentUserName: studentName),
                       ),
                     ),
                     child: _questProgressCard(),
