@@ -16,26 +16,30 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         scaffoldBackgroundColor: AppTheme.background,
         primaryColor: AppTheme.primary,
-        colorScheme: const ColorScheme.dark(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppTheme.primary,
+          brightness: Brightness.light,
           primary: AppTheme.primary,
           secondary: AppTheme.accent,
           surface: AppTheme.card,
+          background: AppTheme.background,
           error: Colors.redAccent,
           onPrimary: Colors.white,
           onSecondary: Colors.white,
-          onSurface: AppTheme.muted,
+          onSurface: AppTheme.ink,
+          onBackground: Colors.white,
         ),
-        textTheme: ThemeData.dark().textTheme.apply(
-              bodyColor: Colors.white,
-              displayColor: Colors.white,
+        textTheme: ThemeData.light().textTheme.apply(
+              bodyColor: AppTheme.ink,
+              displayColor: AppTheme.ink,
             ),
         fontFamily: 'Inter',
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white.withValues(alpha: .08),
+          fillColor: Colors.white.withOpacity(.08),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

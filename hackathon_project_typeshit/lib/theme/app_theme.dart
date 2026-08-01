@@ -8,8 +8,11 @@ class AppTheme {
   static const Color surface = Color(0xFFF5F6FA);
   static const Color background = Color(0xFF140D3E);
   static const Color ink = Color(0xFF2D3436);
-  static const Color card = Color(0xFFFFFFFF);
   static const Color muted = Color(0xFF6E7191);
+  static const Color card = Color(0xFFFFFFFF);
+  static const Color gradientStart = Color(0xFF4F5BFF);
+  static const Color gradientMiddle = Color(0xFF5CCEFA);
+  static const Color gradientEnd = Color(0xFF2EDCA2);
 
   static const List<BoxShadow> cardShadow = [
     BoxShadow(
@@ -18,6 +21,10 @@ class AppTheme {
       offset: Offset(0, 12),
     ),
   ];
+}
+
+extension ColorOpacityHelpers on Color {
+  Color withValues({double alpha = 1.0}) => withOpacity(alpha);
 }
 
 class HoverScale extends StatefulWidget {

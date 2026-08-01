@@ -6,8 +6,8 @@ import '../../models/calendar_event.dart';
 import '../../models/discovery_quest.dart';
 import '../../models/class_feed_post.dart';
 import '../../user_database.dart' hide Assignment;
+import '../teacher_admin_shell.dart';
 import 'assignment_screen.dart';
-import 'club_events_screen.dart';
 import 'student_voice_screen.dart';
 import 'suggestion_hub.dart';
 import 'discovery_quest_screen.dart';
@@ -144,270 +144,192 @@ class StudentDashboard extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppTheme.surface,
-      body: CustomScrollView(
-        slivers: [
-          // ─── HEADER ───────────────────────────────────────
-          SliverAppBar(
-            expandedHeight: 200,
-            floating: false,
-            pinned: true,
-            backgroundColor: AppTheme.success,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppTheme.success, AppTheme.accent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+      appBar: AppBar(
+        title: const Text('Student Dashboard'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: AppTheme.cardShadow,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Good morning, ${student.name}',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Good Morning 👋',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                Text(
-                                  student.name,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  '${student.grade} • ${student.className} • GIIS Singapore',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            CircleAvatar(
-                              radius: 28,
-                              backgroundColor: Colors.white24,
-                              child: Text(
-                                student.avatarInitials,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            _xpChip('⚡ ${student.xp} XP'),
-                            const SizedBox(width: 8),
-                            _xpChip('🏆 ${student.badges.length} Badges'),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            _xpChip('📚 ${pendingAssignments.length} Pending'),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: HoverScale(
-                                child: ElevatedButton.icon(
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const CampusChatScreen(),
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                                  label: const Text('Go to Campus Chat'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.success,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                const SizedBox(height: 8),
+                Text(
+                  '${student.grade} • ${student.className}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _xpChip('⚡ ${student.xp} XP'),
+                    const SizedBox(width: 8),
+                    _xpChip('🏆 ${student.badges.length} Badges'),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const CampusChatScreen()),
                     ),
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: const Text('Open Campus Chat'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          _sectionTitle('Quick Actions'),
+          const SizedBox(height: 12),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.05,
+            children: [
+              _quickAction(context, '📚', 'Assignments', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AssignmentScreen(assignments: assignments),
+                  ),
+                );
+              }),
+              _quickAction(context, '🏫', 'Campus Map', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const CampusMapScreen()),
+                );
+              }),
+              _quickAction(context, '💡', 'Suggestions', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const SuggestionHubScreen()),
+                );
+              }),
+              _quickAction(context, '🎤', 'Student Voice', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const StudentVoiceScreen()),
+                );
+              }),
+              _quickAction(context, '🔬', 'Research', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ResearchHubScreen()),
+                );
+              }),
+              _quickAction(context, '🏆', 'Quests', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DiscoveryQuestScreen(currentUserName: studentName),
+                  ),
+                );
+              }),
+              _quickAction(context, '💬', 'Chat', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const CampusChatScreen()),
+                );
+              }),
+              _quickAction(context, '📢', 'Feed', () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ClassFeedScreen(
+                      currentUser: AppUser(
+                        name: studentName,
+                        password: '',
+                        role: 'Student',
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _sectionTitle('My Report Card'),
+          const SizedBox(height: 12),
+          _reportCardSummary(context, student, assignments),
+          const SizedBox(height: 24),
+          _sectionTitle('Campus Map'),
+          const SizedBox(height: 12),
+          _campusMapCard(context),
+          const SizedBox(height: 24),
+          _sectionTitle('Pending Assignments'),
+          const SizedBox(height: 12),
+          ...pendingAssignments.map((a) => _assignmentCard(a)),
+          const SizedBox(height: 24),
+          _sectionTitle('Discovery Quest Progress'),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => DiscoveryQuestScreen(currentUserName: studentName),
+              ),
+            ),
+            child: _questProgressCard(),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _sectionTitle('Upcoming Events'),
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SchoolCalendarScreen()),
+                ),
+                child: Text('See all', style: TextStyle(fontSize: 12, color: AppTheme.primary, fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...upcomingEvents.map((e) => _eventCard(e.title, e.type, e.date)),
+          const SizedBox(height: 24),
+          _sectionTitle('Latest Announcement'),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ClassFeedScreen(
+                  currentUser: AppUser(
+                    name: studentName,
+                    password: '',
+                    role: 'Student',
                   ),
                 ),
               ),
             ),
+            child: _announcementCard(),
           ),
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ─── QUICK ACTIONS ─────────────────────────
-                  _sectionTitle('Quick Actions'),
-                  const SizedBox(height: 12),
-                  GridView.count(
-                    crossAxisCount: 4,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    children: [
-                      _quickAction(context, '📚', 'Assignments', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AssignmentScreen(assignments: assignments),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '🏫', 'Clubs', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ClubsEventsScreen(),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '💡', 'Suggestions', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const SuggestionHubScreen(),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '🎤', 'Student Voice', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const StudentVoiceScreen(),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '🔬', 'Research', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ResearchHubScreen(),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '🏆', 'Quests', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => DiscoveryQuestScreen(currentUserName: studentName),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '💬', 'Chat', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const CampusChatScreen(),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '📢', 'Feed', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ClassFeedScreen(
-                              currentUser: AppUser(
-                                name: studentName,
-                                password: '',
-                                role: 'Student',
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                      _quickAction(context, '📋', 'Notices', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const DigitalNoticeBoardScreen(),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ─── PENDING ASSIGNMENTS ───────────────────
-                  _sectionTitle('Pending Assignments'),
-                  const SizedBox(height: 12),
-                  ...pendingAssignments.map((a) => _assignmentCard(a)),
-
-                  const SizedBox(height: 24),
-
-                  // ─── DISCOVERY QUEST PROGRESS ──────────────
-                  _sectionTitle('Discovery Quest Progress'),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => DiscoveryQuestScreen(currentUserName: studentName),
-                      ),
-                    ),
-                    child: _questProgressCard(),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ─── UPCOMING EVENTS ───────────────────────
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _sectionTitle('Upcoming Events'),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SchoolCalendarScreen()),
-                        ),
-                        child: Text('See all', style: TextStyle(fontSize: 12, color: const Color(0xFF00B894), fontWeight: FontWeight.w600)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  ...upcomingEvents.map((e) => _eventCard(e.title, e.type, e.date)),
-
-                  const SizedBox(height: 24),
-
-                  // ─── ANNOUNCEMENTS ─────────────────────────
-                  _sectionTitle('Latest Announcement'),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ClassFeedScreen(
-                          currentUser: AppUser(
-                            name: studentName,
-                            password: '',
-                            role: 'Student',
-                          ),
-                        ),
-                      ),
-                    ),
-                    child: _announcementCard(),
-                  ),
-
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -417,18 +339,226 @@ class StudentDashboard extends StatelessWidget {
 
   Widget _xpChip(String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white24,
+        color: AppTheme.surface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primary.withValues(alpha: .12)),
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+
+  Widget _reportCardSummary(BuildContext context, Student student, List<Assignment> assignments) {
+    final graded = assignments.where((a) => a.grade != null).toList();
+    final overall = _computeOverallGrade(graded);
+    final recentSubjects = graded.take(3)
+        .map((a) => '${a.subject}: ${a.grade}')
+        .toList();
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Report Card Snapshot',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    'Your latest progress and grades in one place.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      overall,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    const Text(
+                      'Overall grade',
+                      style: TextStyle(fontSize: 11, color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (recentSubjects.isNotEmpty) ...[
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: recentSubjects.map((subject) => _detailChip(subject)).toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+          Row(
+            children: [
+              _detailChip('Attendance: 97%'),
+              const SizedBox(width: 8),
+              _detailChip('${graded.length} graded subjects'),
+            ],
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => MyReportCardScreen(student: student.name),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text('View full report card'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _campusMapCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Campus Map',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Tap to explore the interactive campus map with zoom and plot details.',
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CampusMapScreen()),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              minimumSize: const Size(130, 44),
+            ),
+            child: const Text('Open map'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _computeOverallGrade(List<Assignment> graded) {
+    if (graded.isEmpty) return 'N/A';
+    final total = graded
+        .map((a) => _gradeValue(a.grade!))
+        .fold<double>(0, (sum, value) => sum + value);
+    return _gradeLetter(total / graded.length);
+  }
+
+  double _gradeValue(String grade) {
+    const values = {
+      'A+': 98.0,
+      'A': 95.0,
+      'A-': 91.0,
+      'B+': 88.0,
+      'B': 84.0,
+      'B-': 80.0,
+      'C+': 77.0,
+      'C': 73.0,
+      'C-': 70.0,
+      'D': 65.0,
+      'F': 50.0,
+    };
+    return values[grade] ?? 75.0;
+  }
+
+  String _gradeLetter(double score) {
+    if (score >= 94) return 'A+';
+    if (score >= 90) return 'A';
+    if (score >= 86) return 'A-';
+    if (score >= 82) return 'B+';
+    if (score >= 78) return 'B';
+    if (score >= 74) return 'B-';
+    if (score >= 70) return 'C+';
+    return 'C';
+  }
+
+  Widget _detailChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.black87),
       ),
     );
   }
@@ -436,10 +566,10 @@ class StudentDashboard extends StatelessWidget {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: AppTheme.primary,
+        color: Colors.black,
       ),
     );
   }
@@ -550,7 +680,7 @@ class StudentDashboard extends StatelessWidget {
     final quests = _discoveryQuests;
     final completed = quests.where((q) => q.completed).length;
     final total = quests.length;
-    final progress = completed / total;
+    final progress = total > 0 ? completed / total : 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -589,7 +719,7 @@ class StudentDashboard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
-              value: progress,
+              value: progress.toDouble(),
               backgroundColor: Colors.white24,
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               minHeight: 8,

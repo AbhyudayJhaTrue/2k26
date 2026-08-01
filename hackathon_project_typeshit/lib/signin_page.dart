@@ -9,8 +9,8 @@ import 'screens/teacher_admin_shell.dart';
 // Replace "XXX" below with your actual website/project name.
 // ---------------------------------------------------------------------------
 
-const String kWebsiteName = "SafeSpace";
-const String kTagline = "Dashing campus collaboration for every student";
+const String kWebsiteName = "CampusCor";
+const String kTagline = "A CODEMASTERS PROJECT";
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -83,9 +83,9 @@ class _SignInPageState extends State<SignInPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.background,
-              AppTheme.primary,
-              AppTheme.accent,
+              AppTheme.gradientStart,
+              AppTheme.gradientMiddle,
+              AppTheme.gradientEnd,
             ],
           ),
         ),
@@ -96,40 +96,75 @@ class _SignInPageState extends State<SignInPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ---- Title + tagline ----
-                  Text(
-                    kWebsiteName,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.w800,
+                  // ---- Hero card ----
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                      letterSpacing: 1.5,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: AppTheme.cardShadow,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withValues(alpha: .12),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(Icons.school_rounded, size: 32, color: AppTheme.primary),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          kWebsiteName,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 42,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          kTagline,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          alignment: WrapAlignment.center,
+                          children: const [
+                            _FeatureChip(icon: Icons.person, label: 'Student friendly'),
+                            _FeatureChip(icon: Icons.laptop_mac, label: 'Teacher access'),
+                            _FeatureChip(icon: Icons.map, label: 'Campus map'),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    kTagline,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white.withValues(alpha: .8),
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 28),
 
                   // ---- Sign-in card ----
                   Container(
-                    width: 380,
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 420),
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: AppTheme.card.withValues(alpha: .95),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: AppTheme.cardShadow,
-                      border: Border.all(color: Colors.white.withValues(alpha: .12)),
+                      border: Border.all(color: Colors.black.withValues(alpha: .05)),
                     ),
                     child: Form(
                       key: _formKey,
@@ -141,15 +176,15 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F1147),
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          const Text(
                             "Sign in to continue",
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey.shade600,
+                              color: Colors.black54,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -157,6 +192,7 @@ class _SignInPageState extends State<SignInPage> {
                           // Name field
                           TextFormField(
                             controller: _nameController,
+                            style: const TextStyle(color: AppTheme.ink),
                             decoration: _inputDecoration(
                               label: "Name",
                               icon: Icons.person_outline,
@@ -171,6 +207,7 @@ class _SignInPageState extends State<SignInPage> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
+                            style: const TextStyle(color: AppTheme.ink),
                             decoration: _inputDecoration(
                               label: "Password",
                               icon: Icons.lock_outline,
@@ -179,7 +216,7 @@ class _SignInPageState extends State<SignInPage> {
                                   _obscurePassword
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
-                                  color: const Color(0xFF6C5CE7),
+                                  color: AppTheme.primary,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -196,11 +233,13 @@ class _SignInPageState extends State<SignInPage> {
 
                           // Role dropdown
                           DropdownButtonFormField<String>(
-                            initialValue: _selectedRole,
+                            value: _selectedRole,
+                            dropdownColor: AppTheme.card,
                             decoration: _inputDecoration(
                               label: "Role",
                               icon: Icons.badge_outlined,
                             ),
+                            style: const TextStyle(color: AppTheme.ink),
                             items: _roles
                                 .map((role) => DropdownMenuItem(
                                       value: role,
@@ -243,6 +282,14 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 18),
+                          Center(
+                            child: Text(
+                              'Need help signing in? Ask your teacher for your credentials.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.black.withValues(alpha: .55), fontSize: 12),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -263,10 +310,11 @@ class _SignInPageState extends State<SignInPage> {
   }) {
     return InputDecoration(
       labelText: label,
+      labelStyle: const TextStyle(color: AppTheme.muted),
       prefixIcon: Icon(icon, color: AppTheme.primary),
       suffixIcon: suffix,
       filled: true,
-      fillColor: AppTheme.card.withValues(alpha: .08),
+      fillColor: Colors.white.withOpacity(.94),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
@@ -275,7 +323,40 @@ class _SignInPageState extends State<SignInPage> {
         borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
       ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: AppTheme.card.withOpacity(.18)),
+      ),
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+    );
+  }
+}
+
+class _FeatureChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _FeatureChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.black.withValues(alpha: .08)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppTheme.primary),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.black87),
+          ),
+        ],
+      ),
     );
   }
 }
