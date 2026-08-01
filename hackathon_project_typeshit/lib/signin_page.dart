@@ -9,7 +9,7 @@ import 'screens/teacher_admin_shell.dart';
 // Replace "XXX" below with your actual website/project name.
 // ---------------------------------------------------------------------------
 
-const String kWebsiteName = "CampusCor";
+const String kWebsiteName = "CampusCore";
 const String kTagline = "A CODEMASTERS PROJECT";
 
 class SignInPage extends StatefulWidget {
