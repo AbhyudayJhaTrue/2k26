@@ -395,51 +395,52 @@ class _DiscoveryQuestScreenState extends State<DiscoveryQuestScreen>
 
 
   List<LeaderboardEntry> get _leaderboard {
+    final students = kUserDatabase.where((user) => user.role == 'Student').toList();
     final entries = <LeaderboardEntry>[
       LeaderboardEntry(
-        name: 'Pranav',
-        initials: 'PS',
+        name: students.firstWhere((user) => user.name == 'Pranav', orElse: () => students.first).name,
+        initials: _initials('Pranav'),
         xp: _xp,
         badges: _earnedBadges.length,
         rankChange: 0,
         weeklyXp: _weeklyXp,
         isCurrentUser: true,
       ),
-      const LeaderboardEntry(
-        name: 'Adhvik',
-        initials: 'AM',
+      LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == 'Adhvik', orElse: () => students.first).name,
+        initials: _initials('Adhvik'),
         xp: 1100,
         badges: 2,
         rankChange: 1,
         weeklyXp: 90,
       ),
-      const LeaderboardEntry(
-        name: 'Aanya',
-        initials: 'AP',
+      LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == 'Aanya', orElse: () => students.first).name,
+        initials: _initials('Aanya'),
         xp: 1050,
         badges: 2,
         rankChange: -1,
         weeklyXp: 75,
       ),
-      const LeaderboardEntry(
-        name: 'Abhyudhay',
-        initials: 'AV',
+      LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == 'Abhyudhay', orElse: () => students.first).name,
+        initials: _initials('Abhyudhay'),
         xp: 980,
         badges: 2,
         rankChange: 1,
         weeklyXp: 60,
       ),
-      const LeaderboardEntry(
-        name: 'Kushagr',
-        initials: 'KS',
+      LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == 'Kushagr', orElse: () => students.first).name,
+        initials: _initials('Kushagr'),
         xp: 870,
         badges: 1,
         rankChange: 0,
         weeklyXp: 40,
       ),
-      const LeaderboardEntry(
-        name: 'Rohan',
-        initials: 'RG',
+      LeaderboardEntry(
+        name: students.firstWhere((user) => user.name == 'Rohan', orElse: () => students.first).name,
+        initials: _initials('Rohan'),
         xp: 760,
         badges: 1,
         rankChange: -1,
@@ -448,6 +449,50 @@ class _DiscoveryQuestScreenState extends State<DiscoveryQuestScreen>
     ];
     entries.sort((a, b) => b.xp.compareTo(a.xp));
     return entries;
+  }
+
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    return parts.map((part) => part.isEmpty ? '' : part[0]).where((ch) => ch.isNotEmpty).take(2).join().toUpperCase();
+  }
+
+  void _showAccountDetails(LeaderboardEntry entry) {
+    final account = kUserDatabase.firstWhere(
+      (user) => user.name.toLowerCase() == entry.name.toLowerCase(),
+      orElse: () => AppUser(name: entry.name, password: '', role: 'Student'),
+    );
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          '${entry.name} Profile',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Name: ${account.name}', style: GoogleFonts.poppins(fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Role: ${account.role}', style: GoogleFonts.poppins(fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('XP: ${entry.xp}', style: GoogleFonts.poppins(fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Weekly XP: ${entry.weeklyXp}', style: GoogleFonts.poppins(fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Badges: ${entry.badges}', style: GoogleFonts.poppins(fontSize: 14)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
 
@@ -1649,128 +1694,130 @@ class _DiscoveryQuestScreenState extends State<DiscoveryQuestScreen>
             ? Colors.redAccent
             : _muted;
 
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: entry.isCurrentUser ? _primary.withValues(alpha: 0.08) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: entry.isCurrentUser
-              ? _primary.withValues(alpha: 0.25)
-              : Colors.transparent,
+    return GestureDetector(
+      onTap: () => _showAccountDetails(entry),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: entry.isCurrentUser ? _primary.withValues(alpha: 0.08) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: entry.isCurrentUser
+                ? _primary.withValues(alpha: 0.25)
+                : Colors.transparent,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(13),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 30,
-              child: Text(
-                '#$rank',
-                style: GoogleFonts.poppins(
-                  color: _ink,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+        child: Padding(
+          padding: const EdgeInsets.all(13),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 30,
+                child: Text(
+                  '#$rank',
+                  style: GoogleFonts.poppins(
+                    color: _ink,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ),
-            ),
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: _primary.withValues(alpha: 0.14),
-              child: Text(
-                entry.initials,
-                style: GoogleFonts.poppins(
-                  color: _primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-            const SizedBox(width: 11),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          entry.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            color: _ink,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      if (entry.isCurrentUser) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: _success,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'You',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  Text(
-                    '+${entry.weeklyXp} XP this week · 🏅 ${entry.badges} badges',
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(color: _muted, fontSize: 10),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${entry.xp} XP',
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: _primary.withValues(alpha: 0.14),
+                child: Text(
+                  entry.initials,
                   style: GoogleFonts.poppins(
                     color: _primary,
                     fontWeight: FontWeight.bold,
-                    fontSize: 13,
+                    fontSize: 12,
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      entry.rankChange > 0
-                          ? Icons.arrow_upward_rounded
-                          : entry.rankChange < 0
-                              ? Icons.arrow_downward_rounded
-                              : Icons.remove_rounded,
-                      color: changeColor,
-                      size: 13,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            entry.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              color: _ink,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        if (entry.isCurrentUser) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: _success,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'You',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     Text(
-                      entry.rankChange == 0
-                          ? 'Same'
-                          : entry.rankChange > 0
-                              ? '+${entry.rankChange}'
-                              : '${entry.rankChange}',
-                      style: GoogleFonts.poppins(color: changeColor, fontSize: 10),
+                      '+${entry.weeklyXp} XP this week · 🏅 ${entry.badges} badges',
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(color: _muted, fontSize: 10),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${entry.xp} XP',
+                    style: GoogleFonts.poppins(
+                      color: _primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        entry.rankChange > 0
+                            ? Icons.arrow_upward_rounded
+                            : entry.rankChange < 0
+                                ? Icons.arrow_downward_rounded
+                                : Icons.remove_rounded,
+                        color: changeColor,
+                        size: 13,
+                      ),
+                      Text(
+                        entry.rankChange == 0
+                            ? 'Same'
+                            : entry.rankChange > 0
+                                ? '+${entry.rankChange}'
+                                : '${entry.rankChange}',
+                        style: GoogleFonts.poppins(color: changeColor, fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

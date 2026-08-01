@@ -4,7 +4,7 @@ import '../../models/student.dart';
 import '../../models/calendar_event.dart';
 import '../../models/discovery_quest.dart';
 import '../../models/class_feed_post.dart';
-import '../../user_database.dart';
+import '../../user_database.dart' hide Assignment;
 import 'assignment_screen.dart';
 import 'club_events_screen.dart';
 import 'student_voice_screen.dart';
@@ -270,7 +270,13 @@ class StudentDashboard extends StatelessWidget {
                         );
                       }),
                       _quickAction(context, '🔬', 'Research', () {}),
-                      _quickAction(context, '🏆', 'Quests', () {}),
+                      _quickAction(context, '🏆', 'Quests', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const DiscoveryQuestScreen(),
+                          ),
+                        );
+                      }),
                       _quickAction(context, '📢', 'Feed', () {}),
                       _quickAction(context, '📋', 'Notices', () {}),
                     ],
@@ -361,7 +367,7 @@ class StudentDashboard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -403,7 +409,7 @@ class StudentDashboard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -537,7 +543,7 @@ class StudentDashboard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -577,10 +583,10 @@ class StudentDashboard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF00B894).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF00B894).withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -609,7 +615,7 @@ class StudentDashboard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00B894).withOpacity(0.1),
+                  color: const Color(0xFF00B894).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
