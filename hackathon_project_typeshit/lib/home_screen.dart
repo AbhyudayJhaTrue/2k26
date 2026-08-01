@@ -23,6 +23,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isStudent = role == 'Student';
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -103,64 +105,79 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 1.1,
-                            children: [
-                              _buildActionCard(
-                                context,
-                                icon: Icons.task_alt,
-                                label: 'Assignments',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const AssignmentScreen(assignments: <Assignment>[]),
+                          child: isStudent
+                            ? GridView.count(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: 1.1,
+                                children: [
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.task_alt,
+                                    label: 'Assignments',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const AssignmentScreen(assignments: <Assignment>[]),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.event,
+                                    label: 'Clubs & Events',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ClubsEventsScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.lightbulb,
+                                    label: 'Suggestion Hub',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const SuggestionHubScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.mic,
+                                    label: 'Student Voice',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const StudentVoiceScreen(),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.dashboard,
+                                    label: 'Dashboard',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => StudentDashboard(studentName: name),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Text(
+                                    'Student-only features are locked for your role. Teachers and admins cannot access the student area.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white.withOpacity(0.9),
+                                      height: 1.5,
+                                    ),
                                   ),
                                 ),
                               ),
-                              _buildActionCard(
-                                context,
-                                icon: Icons.event,
-                                label: 'Clubs & Events',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const ClubsEventsScreen(),
-                                  ),
-                                ),
-                              ),
-                              _buildActionCard(
-                                context,
-                                icon: Icons.lightbulb,
-                                label: 'Suggestion Hub',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const SuggestionHubScreen(),
-                                  ),
-                                ),
-                              ),
-                              _buildActionCard(
-                                context,
-                                icon: Icons.mic,
-                                label: 'Student Voice',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const StudentVoiceScreen(),
-                                  ),
-                                ),
-                              ),
-                              _buildActionCard(
-                                context,
-                                icon: Icons.dashboard,
-                                label: 'Dashboard',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => StudentDashboard(studentName: name),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),
