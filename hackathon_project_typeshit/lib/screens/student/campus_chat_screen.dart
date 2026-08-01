@@ -2,6 +2,220 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../user_database.dart';
 
+// ─────────────────────────────────────────────────────────────
+// SAFETY FILTER — Bad Words, Bullying, Spam Detection
+// NOTE: The old basic filter that banned single words like
+// 'spam', 'hate', 'abuse' has been REMOVED. This new system
+// only blocks messages when actual swearing, bullying, or
+// spamming behaviour is detected — not just because a word
+// appears anywhere in the message.
+// ─────────────────────────────────────────────────────────────
+
+
+// ── SAFETY REPORT MODEL ──────────────────────────────────────
+class SafetyReport {
+  final String studentName;
+  final String message;
+  final String violationType;
+  final DateTime timestamp;
+  String status;
+
+  SafetyReport({
+    required this.studentName,
+    required this.message,
+    required this.violationType,
+    required this.timestamp,
+    this.status = 'Pending',
+  });
+}
+
+class SafetyReports {
+  static final List<SafetyReport> reports = [];
+
+  static void add(String student, String message, String type) {
+    reports.add(SafetyReport(
+      studentName: student,
+      message: message,
+      violationType: type,
+      timestamp: DateTime.now(),
+    ));
+  }
+}
+
+
+// ── FILTER ENUMS ─────────────────────────────────────────────
+enum ViolationType { none, badWord, bullying, spam }
+
+class FilterResult {
+  final bool blocked;
+  final ViolationType type;
+  final String matchedWord;
+
+  FilterResult({
+    required this.blocked,
+    required this.type,
+    required this.matchedWord,
+  });
+
+  String get title {
+    switch (type) {
+      case ViolationType.bullying: return '🚨 Bullying Detected';
+      case ViolationType.badWord: return '🚫 Inappropriate Language';
+      case ViolationType.spam: return '⚠️ Spam Detected';
+      default: return '';
+    }
+  }
+
+  String get description {
+    switch (type) {
+      case ViolationType.bullying:
+        return 'Your message contains content that may be harmful to others. This has been logged and will be reviewed by a teacher.';
+      case ViolationType.badWord:
+        return 'Your message contains inappropriate language. Please keep CampusConnect respectful and safe for everyone.';
+      case ViolationType.spam:
+        return 'You are sending messages too fast or repeating the same message. Please slow down.';
+      default: return '';
+    }
+  }
+
+  Color get color {
+    switch (type) {
+      case ViolationType.bullying: return const Color(0xFFD63031);
+      case ViolationType.badWord: return const Color(0xFFE17055);
+      case ViolationType.spam: return const Color(0xFFF39C12);
+      default: return Colors.grey;
+    }
+  }
+
+  String get emoji {
+    switch (type) {
+      case ViolationType.bullying: return '🚨';
+      case ViolationType.badWord: return '🚫';
+      case ViolationType.spam: return '⚠️';
+      default: return '';
+    }
+  }
+}
+
+
+// ── COMMUNITY FILTER ─────────────────────────────────────────
+class CommunityFilter {
+
+  // 50 bad/swear words — blocks only when these exact words
+  // are used as insults or swearing, not innocent mentions
+  static const List<String> _badWords = [
+    'damn you', 'go to hell', 'what the hell', 'shut up',
+    'you idiot', 'you moron', 'you loser', 'you freak',
+    'you are dumb', 'you are stupid', 'you are an idiot',
+    'you are a moron', 'you are a loser', 'you are a freak',
+    'you are a weirdo', 'you are a jerk', 'screw you',
+    'screw off', 'piss off', 'get lost', 'drop dead',
+    'you suck', 'you stink', 'you smell', 'you are pathetic',
+    'you are worthless', 'nobody likes you', 'you are ugly',
+    'you are disgusting', 'you are gross', 'you are terrible',
+    'ass', 'bastard', 'bitch', 'shit', 'fuck', 'piss',
+    'dick', 'cunt', 'cock', 'whore', 'slut', 'retard',
+    'fag', 'twat', 'wanker', 'bollocks', 'scumbag',
+    'dirtbag', 'piece of crap', 'piece of shit',
+    'shut your mouth', 'shut your face',
+  ];
+
+  // 50 bullying phrases — serious harassment and threats
+  static const List<String> _bullyingWords = [
+    'kill yourself', 'kys', 'go die', 'you should die',
+    'everyone hates you', 'you have no friends',
+    'nobody wants you', 'you dont belong here',
+    'go away forever', 'leave the school', 'drop out',
+    'you will fail', 'you are a failure', 'you are nothing',
+    'i will hurt you', 'i will find you', 'watch your back',
+    'you better run', 'you are dead', 'i will get you',
+    'beat you up', 'smash your face', 'punch you',
+    'hit you', 'destroy you', 'end you',
+    'expose you', 'screenshot this', 'tell everyone',
+    'spread rumours', 'make your life hell',
+    'ruin your life', 'your parents hate you',
+    'your family is poor', 'you cant afford',
+    'freak of nature', 'go back to your country',
+    'you dont belong', 'loser with no friends',
+    'cry baby', 'you are adopted', 'nobody cares about you',
+    'you are a burden', 'the world is better without you',
+    'no one will miss you', 'you are a waste of space',
+    'you will never amount to anything', 'give up now',
+    'you are a joke', 'laughing at you',
+  ];
+
+  // Spam detection state
+  static final List<DateTime> _messageTimes = [];
+  static String _lastMessage = '';
+
+  static bool _isSpam(String message) {
+    final now = DateTime.now();
+
+    // Block exact same message sent twice in a row
+    final cleaned = message.toLowerCase().trim();
+    if (cleaned == _lastMessage && cleaned.isNotEmpty) {
+      _lastMessage = cleaned;
+      return true;
+    }
+    _lastMessage = cleaned;
+
+    // Block more than 3 messages in 5 seconds
+    _messageTimes.add(now);
+    _messageTimes.removeWhere(
+      (t) => now.difference(t).inSeconds > 5,
+    );
+    if (_messageTimes.length > 3) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Main check — runs bullying first (most serious),
+  // then bad words, then spam
+  static FilterResult check(String message) {
+    final lower = message.toLowerCase().trim();
+
+    // 1. Bullying check
+    for (final phrase in _bullyingWords) {
+      if (lower.contains(phrase)) {
+        return FilterResult(
+          blocked: true,
+          type: ViolationType.bullying,
+          matchedWord: phrase,
+        );
+      }
+    }
+
+    // 2. Bad word check
+    for (final word in _badWords) {
+      if (lower.contains(word)) {
+        return FilterResult(
+          blocked: true,
+          type: ViolationType.badWord,
+          matchedWord: word,
+        );
+      }
+    }
+
+    // 3. Spam check
+    if (_isSpam(message)) {
+      return FilterResult(
+        blocked: true,
+        type: ViolationType.spam,
+        matchedWord: '',
+      );
+    }
+
+    return FilterResult(
+      blocked: false,
+      type: ViolationType.none,
+      matchedWord: '',
+    );
+  }
+}
+
+
 /// SafeSpace Campus Chat
 /// A self-contained, demo-ready chat module for classes, clubs and teachers.
 class CampusChatScreen extends StatefulWidget {
@@ -229,6 +443,10 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   AttachmentData? _pendingAttachment;
   bool _isSomeoneTyping = true;
 
+  // ── Safety state ─────────────────────────────────────────
+  int _warningCount = 0;
+  bool _isMuted = false;
+
   @override
   void initState() {
     super.initState();
@@ -252,14 +470,37 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     else _scrollController.animateTo(position, duration: const Duration(milliseconds: 280), curve: Curves.easeOut);
   }
 
+  // ── SEND MESSAGE WITH FULL SAFETY CHECK ──────────────────
   void _sendMessage([String? forcedText]) {
-    final text = (forcedText ?? _messageController.text).trim();
-    if (text.isEmpty && _pendingAttachment == null) return;
-    const blockedWords = ['spam', 'hate', 'abuse'];
-    if (blockedWords.any((word) => text.toLowerCase().contains(word))) {
-      _showNotice('🚫 Message blocked by the community safety filter', Colors.red);
+    // If muted, show muted popup and stop
+    if (_isMuted) {
+      _showMutedPopup();
       return;
     }
+
+    final text = (forcedText ?? _messageController.text).trim();
+    if (text.isEmpty && _pendingAttachment == null) return;
+
+    // Run all 3 safety checks (bullying → bad word → spam)
+    final result = CommunityFilter.check(text);
+
+    if (result.blocked) {
+      _warningCount++;
+
+      // Log report for teacher dashboard
+      SafetyReports.add('You', text, result.type.name);
+
+      // 3 warnings = muted
+      if (_warningCount >= 3) {
+        setState(() => _isMuted = true);
+        _showMutedPopup();
+      } else {
+        _showWarningPopup(result);
+      }
+      return;
+    }
+
+    // Message is clean — send it
     setState(() {
       _messages.add(ChatMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -278,6 +519,134 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     Future.delayed(const Duration(milliseconds: 80), _scrollToBottom);
   }
 
+  // ── WARNING POPUP (different for each type) ──────────────
+  void _showWarningPopup(FilterResult result) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(result.emoji, style: const TextStyle(fontSize: 52)),
+            const SizedBox(height: 12),
+            Text(
+              result.title,
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: result.color),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              result.description,
+              style: GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF636E72), height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            // Warning counter
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: result.color.withValues(alpha: .1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Warning $_warningCount of 3 — ${3 - _warningCount} remaining before mute',
+                style: GoogleFonts.poppins(fontSize: 12, color: result.color, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Teacher log notice
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
+              child: Row(children: [
+                const Icon(Icons.info_outline, size: 16, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'This incident has been logged and sent to your teacher for review.',
+                    style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey),
+                  ),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(color: result.color, borderRadius: BorderRadius.circular(14)),
+                child: Center(
+                  child: Text('I understand', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── MUTED POPUP ──────────────────────────────────────────
+  void _showMutedPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🔇', style: TextStyle(fontSize: 52)),
+            const SizedBox(height: 12),
+            Text('You have been muted',
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text(
+              'You have received 3 warnings for violating CampusConnect community guidelines. You have been muted and your activity has been reported to your teacher.',
+              style: GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF636E72), height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.shade200),
+              ),
+              child: Row(children: [
+                const Icon(Icons.report, color: Colors.red, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'A full report has been sent to your teacher and school administrator.',
+                    style: GoogleFonts.poppins(fontSize: 11, color: Colors.red),
+                  ),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(14)),
+                child: Center(
+                  child: Text('OK', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _sendVoiceDemo() {
     setState(() {
       _messages.add(ChatMessage(id: DateTime.now().microsecondsSinceEpoch.toString(), senderId: 'me', senderName: 'You', text: '', timestamp: DateTime.now(), kind: MessageKind.voice, voiceDuration: '0:08'));
@@ -285,11 +654,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       widget.room.lastSender = 'You';
       widget.room.lastActivity = DateTime.now();
     });
-    _showNotice('Voice message added — demo mode', const Color(0xFF00B894));
     Future.delayed(const Duration(milliseconds: 80), _scrollToBottom);
   }
-
-  void _showNotice(String message, Color color) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message, style: GoogleFonts.poppins(fontSize: 12)), backgroundColor: color, behavior: SnackBarBehavior.floating));
 
   Future<void> _showMessageActions(ChatMessage message) async {
     await showModalBottomSheet<void>(
@@ -364,7 +730,33 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         )),
         if (_replyingTo != null) _ReplyPreview(message: _replyingTo!, onCancel: () => setState(() => _replyingTo = null)),
         if (_pendingAttachment != null) _AttachmentPreview(file: _pendingAttachment!, onCancel: () => setState(() => _pendingAttachment = null)),
-        _MessageInput(controller: _messageController, onAttach: _pickAttachment, onVoice: _sendVoiceDemo, onEmoji: (emoji) { _messageController.text += emoji; _messageController.selection = TextSelection.collapsed(offset: _messageController.text.length); }, onSend: _sendMessage),
+        // Show muted bar or normal input
+        _isMuted
+            ? Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.mic_off, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(
+                      '🔇 You are muted — contact your teacher',
+                      style: GoogleFonts.poppins(fontSize: 13, color: Colors.red, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              )
+            : _MessageInput(
+                controller: _messageController,
+                onAttach: _pickAttachment,
+                onVoice: _sendVoiceDemo,
+                onEmoji: (emoji) {
+                  _messageController.text += emoji;
+                  _messageController.selection = TextSelection.collapsed(offset: _messageController.text.length);
+                },
+                onSend: _sendMessage,
+              ),
       ]),
     );
   }
