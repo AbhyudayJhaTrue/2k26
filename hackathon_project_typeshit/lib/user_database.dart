@@ -11,7 +11,7 @@ import 'models/discovery_quest.dart';
 class AppUser {
   final String name;
   final String password;
-  final String role; // "Student", "Teacher", or "Admin"
+  final String role; // "Student" or "Teacher"
 
   const AppUser({
     required this.name,
@@ -32,9 +32,6 @@ const List<AppUser> kUserDatabase = [
   // ---- Teachers ----
   AppUser(name: "Jason", password: "1234", role: "Teacher"),
   AppUser(name: "Jack",  password: "1234", role: "Teacher"),
-
-  // ---- Admin ----
-  AppUser(name: "Abhyuday", password: "1234", role: "Admin"),
 ];
 
 /// Checks name + password + role against the database.

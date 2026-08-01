@@ -14,6 +14,7 @@ import 'discovery_quest_screen.dart';
 import 'campus_chat_screen.dart';
 import 'research_hub_screen.dart';
 import '../class_feed_screen.dart';
+import 'notices_and_calendar_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -333,7 +334,13 @@ class StudentDashboard extends StatelessWidget {
                           ),
                         );
                       }),
-                      _quickAction(context, '📋', 'Notices', () {}),
+                      _quickAction(context, '📋', 'Notices', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const DigitalNoticeBoardScreen(),
+                          ),
+                        );
+                      }),
                     ],
                   ),
 
@@ -361,7 +368,18 @@ class StudentDashboard extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ─── UPCOMING EVENTS ───────────────────────
-                  _sectionTitle('Upcoming Events'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _sectionTitle('Upcoming Events'),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const SchoolCalendarScreen()),
+                        ),
+                        child: Text('See all', style: TextStyle(fontSize: 12, color: const Color(0xFF00B894), fontWeight: FontWeight.w600)),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   ...upcomingEvents.map((e) => _eventCard(e.title, e.type, e.date)),
 

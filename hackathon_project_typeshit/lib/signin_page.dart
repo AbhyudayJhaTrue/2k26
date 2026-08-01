@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'user_database.dart';
-import 'home_screen.dart';
 import 'screens/student/student_dashboard.dart';
-import 'screens/teacher/teacher_dashboard_screen.dart';
+import 'screens/teacher_admin_shell.dart';
 
 // ---------------------------------------------------------------------------
 // SIGN IN PAGE
@@ -28,7 +27,7 @@ class _SignInPageState extends State<SignInPage> {
   String? _selectedRole;
   bool _obscurePassword = true;
 
-  final List<String> _roles = ["Student", "Teacher", "Admin"];
+  final List<String> _roles = ["Student", "Teacher"];
 
   @override
   void dispose() {
@@ -54,15 +53,12 @@ class _SignInPageState extends State<SignInPage> {
         );
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) {
-              if (user.role == 'Student') {
-                return StudentDashboard(studentName: user.name);
-              }
-              if (user.role == 'Teacher') {
-                return TeacherDashboardScreen(teacherName: user.name);
-              }
-              return HomeScreen(name: user.name, role: user.role);
-            },
+            builder: (context) => user.role == 'Student'
+                ? StudentDashboard(studentName: user.name)
+                : TeacherAdminShell(
+                    name: user.name,
+                    role: user.role,
+                  ),
           ),
         );
       } else {
