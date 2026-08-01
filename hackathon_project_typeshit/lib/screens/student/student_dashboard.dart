@@ -4,10 +4,12 @@ import '../../models/student.dart';
 import '../../models/calendar_event.dart';
 import '../../models/discovery_quest.dart';
 import '../../models/class_feed_post.dart';
+import '../../user_database.dart';
 import 'assignment_screen.dart';
 import 'club_events_screen.dart';
 import 'student_voice_screen.dart';
 import 'suggestion_hub.dart';
+import 'discovery_quest_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -112,12 +114,7 @@ class StudentDashboard extends StatelessWidget {
         ),
       ];
 
-  List<DiscoveryQuest> get _discoveryQuests => const [
-        DiscoveryQuest(title: 'Explore the Library', completed: true),
-        DiscoveryQuest(title: 'Join a Club', completed: true),
-        DiscoveryQuest(title: 'Complete a Science Fair Project', completed: false),
-        DiscoveryQuest(title: 'Attend a Guest Lecture', completed: false),
-      ];
+  List<DiscoveryQuest> get _discoveryQuests => UserDatabase.discoveryQuests;
 
   List<ClassFeedPost> get _classFeedPosts => const [
         ClassFeedPost(
@@ -291,7 +288,14 @@ class StudentDashboard extends StatelessWidget {
                   // ─── DISCOVERY QUEST PROGRESS ──────────────
                   _sectionTitle('Discovery Quest Progress'),
                   const SizedBox(height: 12),
-                  _questProgressCard(),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const DiscoveryQuestScreen(),
+                      ),
+                    ),
+                    child: _questProgressCard(),
+                  ),
 
                   const SizedBox(height: 24),
 
