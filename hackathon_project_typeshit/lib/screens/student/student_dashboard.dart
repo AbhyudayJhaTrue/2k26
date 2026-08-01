@@ -10,6 +10,7 @@ import 'club_events_screen.dart';
 import 'student_voice_screen.dart';
 import 'suggestion_hub.dart';
 import 'discovery_quest_screen.dart';
+import 'research_hub_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -269,7 +270,13 @@ class StudentDashboard extends StatelessWidget {
                           ),
                         );
                       }),
-                      _quickAction(context, '🔬', 'Research', () {}),
+                      _quickAction(context, '🔬', 'Research', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ResearchHubScreen(),
+                          ),
+                        );
+                      }),
                       _quickAction(context, '🏆', 'Quests', () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

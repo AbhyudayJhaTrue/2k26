@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'models/assignment.dart';
 import 'screens/student/assignment_screen.dart';
 import 'screens/student/club_events_screen.dart';
+import 'screens/student/research_hub_screen.dart';
 import 'screens/student/student_dashboard.dart';
 import 'screens/student/student_voice_screen.dart';
 import 'screens/student/suggestion_hub.dart';
@@ -159,6 +160,16 @@ class HomeScreen extends StatelessWidget {
                                     onTap: () => Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (_) => StudentDashboard(studentName: name),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildActionCard(
+                                    context,
+                                    icon: Icons.science,
+                                    label: 'Research Hub',
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ResearchHubScreen(),
                                       ),
                                     ),
                                   ),

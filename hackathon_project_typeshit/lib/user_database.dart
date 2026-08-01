@@ -174,6 +174,34 @@ class LearningResource {
   });
 }
 
+class ResearchResource {
+  final String id;
+  final String title;
+  final String description;
+  final String subject;
+  final String type; // article, video, book, journal, website, research_paper, government
+  final String source;
+  final String difficulty; // Beginner, Intermediate, Advanced
+  final String readTime;
+  final String url;
+  final bool teacherApproved;
+  bool isBookmarked;
+
+  ResearchResource({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.subject,
+    required this.type,
+    required this.source,
+    required this.difficulty,
+    required this.readTime,
+    required this.url,
+    this.teacherApproved = false,
+    this.isBookmarked = false,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // USER DATABASE SINGLETON
 // ---------------------------------------------------------------------------
@@ -438,6 +466,121 @@ class UserDatabase extends ChangeNotifier {
     ),
   ];
 
+  final List<ResearchResource> researchResources = [
+    ResearchResource(
+      id: 'rr1',
+      title: 'Introduction to Photosynthesis',
+      description:
+          'A clear, illustrated breakdown of how plants convert light energy '
+          'into chemical energy, covering the light and dark reactions.',
+      subject: 'Biology',
+      type: 'article',
+      source: 'Khan Academy',
+      difficulty: 'Beginner',
+      readTime: '8 min read',
+      url: 'khanacademy.org/photosynthesis',
+      teacherApproved: true,
+    ),
+    ResearchResource(
+      id: 'rr2',
+      title: 'The French Revolution Explained',
+      description:
+          'A documentary-style video covering the causes, key events, and '
+          'lasting impact of the French Revolution.',
+      subject: 'History',
+      type: 'video',
+      source: 'CrashCourse',
+      difficulty: 'Intermediate',
+      readTime: '14 min watch',
+      url: 'youtube.com/crashcourse-french-revolution',
+      teacherApproved: true,
+    ),
+    ResearchResource(
+      id: 'rr3',
+      title: 'Quantum Mechanics: A Primer',
+      description:
+          'An accessible textbook chapter introducing wave-particle duality, '
+          'the uncertainty principle, and the Schrödinger equation.',
+      subject: 'Physics',
+      type: 'book',
+      source: 'MIT OpenCourseWare',
+      difficulty: 'Advanced',
+      readTime: '25 min read',
+      url: 'ocw.mit.edu/quantum-primer',
+      teacherApproved: true,
+    ),
+    ResearchResource(
+      id: 'rr4',
+      title: 'Machine Learning Foundations',
+      description:
+          'A peer-reviewed journal article surveying supervised and '
+          'unsupervised learning techniques with real-world examples.',
+      subject: 'Computer Science',
+      type: 'journal',
+      source: 'IEEE Xplore',
+      difficulty: 'Advanced',
+      readTime: '20 min read',
+      url: 'ieee.org/ml-foundations',
+      teacherApproved: false,
+    ),
+    ResearchResource(
+      id: 'rr5',
+      title: 'Climate Change: The Science',
+      description:
+          'An official government explainer on greenhouse gases, global '
+          'temperature trends, and mitigation strategies.',
+      subject: 'Geography',
+      type: 'government',
+      source: 'NASA Climate',
+      difficulty: 'Intermediate',
+      readTime: '10 min read',
+      url: 'climate.nasa.gov',
+      teacherApproved: true,
+    ),
+    ResearchResource(
+      id: 'rr6',
+      title: 'Algebra II Practice Portal',
+      description:
+          'An interactive website with worked examples and practice problems '
+          'covering quadratics, polynomials, and functions.',
+      subject: 'Mathematics',
+      type: 'website',
+      source: 'Purplemath',
+      difficulty: 'Intermediate',
+      readTime: '15 min',
+      url: 'purplemath.com/algebra-ii',
+      teacherApproved: true,
+    ),
+    ResearchResource(
+      id: 'rr7',
+      title: 'Organic Chemistry Reaction Mechanisms',
+      description:
+          'A detailed research paper walking through common reaction '
+          'mechanisms with annotated diagrams.',
+      subject: 'Chemistry',
+      type: 'research_paper',
+      source: 'ScienceDirect',
+      difficulty: 'Advanced',
+      readTime: '30 min read',
+      url: 'sciencedirect.com/organic-mechanisms',
+      teacherApproved: false,
+    ),
+    ResearchResource(
+      id: 'rr8',
+      title: 'Shakespeare in Context',
+      description:
+          'An article exploring the historical and cultural backdrop of '
+          "Shakespeare's major plays.",
+      subject: 'English',
+      type: 'article',
+      source: 'British Library',
+      difficulty: 'Beginner',
+      readTime: '6 min read',
+      url: 'bl.uk/shakespeare-in-context',
+      teacherApproved: true,
+    ),
+  ];
+
   // --- DATABASE ACTIONS ---
 
   void toggleEventRegistration(String eventId) {
@@ -477,6 +620,12 @@ class UserDatabase extends ChangeNotifier {
         createdAt: DateTime.now(),
       ),
     );
+    notifyListeners();
+  }
+
+  void toggleBookmarkResource(String resourceId) {
+    final resource = researchResources.firstWhere((r) => r.id == resourceId);
+    resource.isBookmarked = !resource.isBookmarked;
     notifyListeners();
   }
 
