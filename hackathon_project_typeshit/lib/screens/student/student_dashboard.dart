@@ -15,6 +15,7 @@ import 'campus_chat_screen.dart';
 import 'research_hub_screen.dart';
 import '../class_feed_screen.dart';
 import 'notices_and_calendar_screen.dart';
+import 'club_events_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -213,53 +214,76 @@ class StudentDashboard extends StatelessWidget {
           _sectionTitle('Quick Actions'),
           const SizedBox(height: 12),
           GridView.count(
-            crossAxisCount: 2,
+            crossAxisCount: 4,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.05,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: .92,
             children: [
-              _quickAction(context, '📚', 'Assignments', () {
+              _quickAction(context, Icons.assignment_rounded, 'Work',
+                  const Color(0xFF6C5CE7), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => AssignmentScreen(assignments: assignments),
                   ),
                 );
               }),
-              _quickAction(context, '🏫', 'Campus Map', () {
+              _quickAction(context, Icons.map_rounded, 'Map',
+                  const Color(0xFF00CEC9), () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const CampusMapScreen()),
+                  MaterialPageRoute(builder: (context) =>
+                    const CampusModulePage(child: CampusMapScreen())),
                 );
               }),
-              _quickAction(context, '💡', 'Suggestions', () {
+              _quickAction(context, Icons.workspace_premium_rounded, 'Report',
+                  const Color(0xFFFDA65D), () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CampusModulePage(
+                    child: MyReportCardScreen(student: studentName))),
+                );
+              }),
+              _quickAction(context, Icons.person_search_rounded, 'Profile',
+                  const Color(0xFF00B894), () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CampusModulePage(
+                    child: StudentLearningProfileScreen(lockTo: studentName))),
+                );
+              }),
+              _quickAction(context, Icons.lightbulb_rounded, 'Ideas',
+                  const Color(0xFFE84393), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const SuggestionHubScreen()),
                 );
               }),
-              _quickAction(context, '🎤', 'Student Voice', () {
+              _quickAction(context, Icons.campaign_rounded, 'Voice',
+                  const Color(0xFF6C5CE7), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const StudentVoiceScreen()),
                 );
               }),
-              _quickAction(context, '🔬', 'Research', () {
+              _quickAction(context, Icons.science_rounded, 'Research',
+                  const Color(0xFF00CEC9), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const ResearchHubScreen()),
                 );
               }),
-              _quickAction(context, '🏆', 'Quests', () {
+              _quickAction(context, Icons.emoji_events_rounded, 'Quests',
+                  const Color(0xFFFDA65D), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => DiscoveryQuestScreen(currentUserName: studentName),
                   ),
                 );
               }),
-              _quickAction(context, '💬', 'Chat', () {
+              _quickAction(context, Icons.forum_rounded, 'Chat',
+                  const Color(0xFF00B894), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const CampusChatScreen()),
                 );
               }),
-              _quickAction(context, '📢', 'Feed', () {
+              _quickAction(context, Icons.dynamic_feed_rounded, 'Feed',
+                  const Color(0xFFE84393), () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ClassFeedScreen(
@@ -272,12 +296,30 @@ class StudentDashboard extends StatelessWidget {
                   ),
                 );
               }),
+              _quickAction(context, Icons.event_note_rounded, 'Notices',
+                  const Color(0xFF6C5CE7), () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const DigitalNoticeBoardScreen(),
+                  ),
+                );
+              }),
+              _quickAction(context, Icons.groups_rounded, 'Clubs',
+                  const Color(0xFF00CEC9), () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ClubsEventsScreen()),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 24),
           _sectionTitle('My Report Card'),
           const SizedBox(height: 12),
           _reportCardSummary(context, student, assignments),
+          const SizedBox(height: 24),
+          _sectionTitle('My Learning Profile'),
+          const SizedBox(height: 12),
+          _learningProfileCard(context),
           const SizedBox(height: 24),
           _sectionTitle('Campus Map'),
           const SizedBox(height: 12),
@@ -446,7 +488,8 @@ class StudentDashboard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => MyReportCardScreen(student: student.name),
+                  builder: (context) => CampusModulePage(
+                    child: MyReportCardScreen(student: student.name)),
                 ),
               ),
               style: ElevatedButton.styleFrom(
@@ -458,6 +501,60 @@ class StudentDashboard extends StatelessWidget {
               ),
               child: const Text('View full report card'),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _learningProfileCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'How you learn',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Attendance, homework, quest activity and the study habits your teachers have noted.',
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => CampusModulePage(
+                  child: StudentLearningProfileScreen(lockTo: studentName),
+                ),
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              minimumSize: const Size(130, 44),
+            ),
+            child: const Text('View profile'),
           ),
         ],
       ),
@@ -496,7 +593,8 @@ class StudentDashboard extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CampusMapScreen()),
+              MaterialPageRoute(builder: (_) =>
+                const CampusModulePage(child: CampusMapScreen())),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primary,
@@ -563,38 +661,67 @@ class StudentDashboard extends StatelessWidget {
     );
   }
 
+  /// Matches the section label style used across the teacher and admin module
+  /// so both halves of the app read as one product.
   Widget _sectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 15,
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 9),
+        Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.1,
+            color: AppTheme.muted,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _quickAction(BuildContext context, String emoji, String label, VoidCallback onTap) {
+  /// Compact quick-action tile. Four per row, so the icon carries the meaning
+  /// and the label stays to a single short word.
+  Widget _quickAction(BuildContext context, IconData icon, String label,
+      Color hue, VoidCallback onTap) {
     return HoverScale(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: AppTheme.cardShadow,
+          border: Border.all(color: hue.withValues(alpha: .22)),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 6),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: hue.withValues(alpha: .16),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 18, color: hue),
+            ),
+            const SizedBox(height: 7),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 11,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10.5,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.muted,
+                color: AppTheme.ink,
               ),
               textAlign: TextAlign.center,
             ),

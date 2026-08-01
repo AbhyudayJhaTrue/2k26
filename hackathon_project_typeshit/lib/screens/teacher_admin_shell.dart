@@ -23,6 +23,59 @@ const _grad = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRigh
 const _gradSoft = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
   colors: [_purple, _teal]);
 
+// ═══ THEME ═══
+//
+// This module is designed light. The host app runs a dark ThemeData, so every
+// entry point re-applies this locally. Without it the inherited white body
+// text lands on the white Surface cards and the screens read as blank.
+
+ThemeData campusTheme() => ThemeData(
+  useMaterial3: true, brightness: Brightness.light, scaffoldBackgroundColor: _bg,
+  colorScheme: ColorScheme.fromSeed(seedColor: _purple, brightness: Brightness.light),
+  textTheme: ThemeData.light().textTheme.apply(bodyColor: _ink, displayColor: _ink),
+  iconTheme: const IconThemeData(color: _ink),
+  cardTheme: CardThemeData(color: Colors.white, elevation: 0, margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+  inputDecorationTheme: InputDecorationTheme(filled: true, fillColor: _bg,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
+       borderSide: const BorderSide(color: _purple, width: 1.4))));
+
+/// Hosts a module screen pushed on its own route from outside the shell, for
+/// example from the student dashboard.
+///
+/// The screens inside this file render a bare `_Page` - a Column with an
+/// Expanded - because the shell normally supplies the Scaffold around them.
+/// Pushed directly they would have no background, no Material ancestor for
+/// ink ripples, no back button, and would inherit the host app's dark theme.
+/// This wrapper supplies all four.
+class CampusModulePage extends StatelessWidget {
+ final Widget child;
+ const CampusModulePage({super.key, required this.child});
+
+ @override
+ Widget build(BuildContext c) => Theme(data: campusTheme(), child: Scaffold(
+   backgroundColor: _bg,
+   body: SafeArea(bottom: false, child: Column(children: [
+     Padding(padding: const EdgeInsets.fromLTRB(8, 6, 16, 0), child: Row(children: [
+      IconButton(
+        onPressed: () => Navigator.of(c).maybePop(),
+        icon: const Icon(Icons.arrow_back_rounded, size: 21),
+        color: _ink,
+        tooltip: 'Back',
+        style: IconButton.styleFrom(backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)))),
+      const Spacer(),
+      const Icon(Icons.school_rounded, size: 14, color: _muted),
+      const SizedBox(width: 6),
+      const Text('CampusConnect', style: TextStyle(fontSize: 11,
+        fontWeight: FontWeight.w700, color: _muted, letterSpacing: .3)),
+     ])),
+     Expanded(child: child),
+   ]))));
+}
+
 // ═══ ATOMS ═══
 
 /// Soft elevated white surface - the base card for the whole app.
@@ -202,7 +255,7 @@ Widget _feedTile(String text, String time, IconData icon, Color hue) => ListTile
 
 // ═══ DATA (mirrors user_database.dart) ═══
 
-const _students = ['Pranav', 'Kushagr', 'Adhvik'];
+const _students = ['Adhvik', 'Pranav', 'Aanya', 'Abhyudhay', 'Rohan', 'Kushagr'];
 
 const _profiles = {
  'Pranav': {'a': .95, 'h': .90, 'q': .88, 'o': .91, 'xp': 1240, 's': 'Top Performer', 'miss': 0,
@@ -211,6 +264,12 @@ const _profiles = {
         'b': ['First Quest']},
  'Adhvik': {'a': .98, 'h': .95, 'q': .95, 'o': .96, 'xp': 1580, 's': 'Top Performer', 'miss': 0,
         'b': ['Star Researcher', 'Quest Champion', 'Perfect Score']},
+ 'Aanya': {'a': .96, 'h': .92, 'q': .86, 'o': .90, 'xp': 1310, 's': 'Top Performer', 'miss': 0,
+        'b': ['Star Researcher', 'Voice of the Year']},
+ 'Abhyudhay': {'a': .91, 'h': .84, 'q': .79, 'o': .83, 'xp': 1020, 's': 'On Track', 'miss': 1,
+        'b': ['First Quest', 'Maker Badge']},
+ 'Rohan': {'a': .84, 'h': .74, 'q': .70, 'o': .75, 'xp': 860, 's': 'On Track', 'miss': 1,
+        'b': ['First Quest']},
 };
 
 Color _statusHue(String s) => s == 'Top Performer' ? _green : s == 'Needs Support' ? _red : _purple;
@@ -263,14 +322,15 @@ class _ShellState extends State<TeacherAdminShell> {
        position: Tween(begin: const Offset(0, .015), end: Offset.zero).animate(a), child: ch)),
     child: KeyedSubtree(key: ValueKey(sel), child: items[sel].page(widget.name)));
 
-  return Scaffold(
+  return Theme(data: campusTheme(), child: Scaffold(
+    backgroundColor: _bg,
     body: wide
        ? Row(children: [
          _Rail(items: items, sel: sel, name: widget.name,
             role: widget.role, onTap: (i) => setState(() => sel = i)),
          Expanded(child: body)])
        : body,
-    bottomNavigationBar: wide ? null : _bar());
+    bottomNavigationBar: wide ? null : _bar()));
  }
 
  Widget _bar() {
@@ -422,19 +482,32 @@ class _CIState extends State<ClassInsightsScreen> {
 // ═══ 2 · STUDENT LEARNING PROFILE ═══
 
 class StudentLearningProfileScreen extends StatefulWidget {
- const StudentLearningProfileScreen({super.key});
+ /// When set, the screen locks to this student and hides the picker. Students
+ /// open their own profile this way; teachers leave it null and get the picker.
+ final String? lockTo;
+ const StudentLearningProfileScreen({super.key, this.lockTo});
  @override
  State<StudentLearningProfileScreen> createState() => _SLPState();
 }
 
 class _SLPState extends State<StudentLearningProfileScreen> {
- String who = _students.first;
+ late String who = (widget.lockTo != null && _profiles.containsKey(widget.lockTo))
+   ? widget.lockTo!
+   : _students.first;
+
+ bool get locked => widget.lockTo != null && _profiles.containsKey(widget.lockTo);
 
  static const _feed = {
   'Pranav': [['Submitted · History Essay', '2h ago', 0], ['Completed · Discovery Quest #4', '1d ago', 1]],
   'Kushagr': [['Missed · Science Worksheet', '1d ago', 2], ['Submitted · English Draft', '3d ago', 0]],
   'Adhvik': [['Badge earned · Perfect Score', '1h ago', 3], ['Completed · Discovery Quest #5', '6h ago', 1],
          ['Submitted · Math Assignment', '1d ago', 0]],
+  'Aanya': [['Submitted · Student Voice editorial', '3h ago', 0],
+        ['Badge earned · Voice of the Year', '2d ago', 3]],
+  'Abhyudhay': [['Submitted · Circuits investigation', '5h ago', 0],
+          ['Completed · Robotics build task', '2d ago', 1]],
+  'Rohan': [['Submitted · Group presentation', '1d ago', 0],
+        ['Missed · English solo task', '2d ago', 2]],
  };
  static const _fi = [Icons.task_alt_rounded, Icons.explore_rounded,
    Icons.error_outline_rounded, Icons.workspace_premium_rounded];
@@ -446,9 +519,11 @@ class _SLPState extends State<StudentLearningProfileScreen> {
   final hue = _statusHue(p['s'] as String);
 
   return _Page(
-    title: 'Learning Profile',
+    title: locked ? 'My Learning Profile' : 'Learning Profile',
     sub: 'Grade 9 · Section A',
-    trailing: _Drop(who, _students, (v) => setState(() => who = v!), light: true),
+    trailing: locked
+       ? null
+       : _Drop(who, _students, (v) => setState(() => who = v!), light: true),
     children: [
       const SizedBox(height: 18),
       Surface(pad: const EdgeInsets.all(20), child: Column(children: [
@@ -1068,7 +1143,7 @@ const _deep = {
   'goal': 'lead a research group and push English writing up to the level of the analysis',
  },
  'Kushagr': {
-  'roll': '9A-12', 'att': .78, 'punc': .69, 'rank': 3,
+  'roll': '9A-12', 'att': .78, 'punc': .69, 'rank': 6,
   'hist': [.71, .68, .66],
   'subj': {'Mathematics': .61, 'Science': .58, 'English': .74, 'History': .70},
   'style': 'discussion-led - engages far more in verbal work than in written follow-up',
@@ -1086,6 +1161,36 @@ const _deep = {
   'habit': 'sets the standard in the class for preparation and presentation',
   'watch': 'the current syllabus is no longer stretching them',
   'goal': 'mentor a peer and attempt olympiad-level extension work',
+ },
+ 'Aanya': {
+  'roll': '9A-03', 'att': .96, 'punc': .94, 'rank': 3,
+  'hist': [.82, .87, .90],
+  'subj': {'Mathematics': .86, 'Science': .89, 'English': .95, 'History': .91},
+  'style': 'language-led - reasons through writing and explains ideas clearly to others',
+  'work': ['the Student Voice editorial', 'the History source-comparison task'],
+  'habit': 'annotates as she reads and rewrites a draft before handing it in',
+  'watch': 'rushes the final steps of multi-stage mathematics problems',
+  'goal': 'slow down on working-out in mathematics and keep the writing standard high',
+ },
+ 'Abhyudhay': {
+  'roll': '9A-05', 'att': .91, 'punc': .88, 'rank': 4,
+  'hist': [.74, .77, .83],
+  'subj': {'Mathematics': .84, 'Science': .81, 'English': .78, 'History': .86},
+  'style': 'practical - understands a concept properly once he has built or tested it',
+  'work': ['the robotics chassis build', 'the Chapter 7 circuits investigation'],
+  'habit': 'improving steadily each term and asks good follow-up questions',
+  'watch': 'theory questions score lower than the practical work that sits behind them',
+  'goal': 'convert the strong practical understanding into full written answers',
+ },
+ 'Rohan': {
+  'roll': '9A-09', 'att': .84, 'punc': .80, 'rank': 5,
+  'hist': [.69, .72, .75],
+  'subj': {'Mathematics': .72, 'Science': .76, 'English': .71, 'History': .79},
+  'style': 'collaborative - does his strongest work in pairs and small groups',
+  'work': ['the group presentation on local history', 'the Eco Club field survey'],
+  'habit': 'reliable in team tasks and steadily closing the gap term on term',
+  'watch': 'independent written work is well behind the standard of his group work',
+  'goal': 'complete one piece of solo written work each week to build independence',
  },
 };
 
