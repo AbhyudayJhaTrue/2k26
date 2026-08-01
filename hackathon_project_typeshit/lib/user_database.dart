@@ -867,4 +867,18 @@ class UserDatabase extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void addAssignment(Assignment assignment) {}
+
+  void updateAssignment(Assignment assignment) {}
+
+  void deleteAssignment(String id) {}
+
+  void addResource(LearningResource learningResource) {}
+
+  void deleteResource(String id) {}
+
+  void setSuggestionStatus(String id, SuggestionStatus status) {}
+
+  void setVoiceReportStatus(String id, VoiceStatus status) {}
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../user_database.dart';
 
 class StudentVoiceScreen extends StatefulWidget {
@@ -16,7 +17,13 @@ class _StudentVoiceScreenState extends State<StudentVoiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Student Voice (Anonymous)')),
+      backgroundColor: AppTheme.surface,
+      appBar: AppBar(
+        title: const Text('Student Voice (Anonymous)'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 import 'models/assignment.dart';
 import 'screens/student/assignment_screen.dart';
 import 'screens/student/campus_chat_screen.dart';
@@ -70,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                             fontSize: 14,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white.withAlpha(204),
+                            color: Colors.white.withValues(alpha: .8),
                           ),
                         ),
                       ],
@@ -194,7 +195,7 @@ class HomeScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withValues(alpha: .9),
                                       height: 1.5,
                                     ),
                                   ),
@@ -218,31 +219,31 @@ class HomeScreen extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
   }) {
-    return InkWell(
+    return HoverScale(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(31),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withAlpha(46)),
+          color: AppTheme.card.withValues(alpha: .08),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withValues(alpha: .14)),
+          boxShadow: AppTheme.cardShadow,
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.white24,
-              child: Icon(icon, color: Colors.white, size: 22),
+              radius: 22,
+              backgroundColor: AppTheme.accent.withValues(alpha: .18),
+              child: Icon(icon, color: AppTheme.accent, size: 24),
             ),
             const Spacer(),
             Text(
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],

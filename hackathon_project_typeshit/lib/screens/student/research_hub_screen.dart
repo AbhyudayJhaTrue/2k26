@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
 import '../../user_database.dart';
 
 class ResearchHubScreen extends StatefulWidget {
@@ -97,13 +98,13 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
     final filtered = _filtered;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppTheme.surface,
       body: NestedScrollView(
         headerSliverBuilder: (context, _) => [
           SliverAppBar(
             expandedHeight: 190,
             pinned: true,
-            backgroundColor: const Color(0xFF00B894),
+            backgroundColor: AppTheme.success,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () => Navigator.pop(context),
@@ -121,7 +122,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF00B894), Color(0xFF2D3436)],
+                    colors: [AppTheme.success, AppTheme.ink],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -144,7 +145,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                         Text(
                           'Teacher-approved resources only • No AI answers',
                           style: GoogleFonts.poppins(
-                            color: Colors.white70,
+                          color: AppTheme.card.withValues(alpha: .8),
                             fontSize: 12,
                           ),
                         ),
@@ -152,14 +153,14 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                         Container(
                           height: 42,
                           decoration: BoxDecoration(
-                            color: Colors.white24,
+                            color: AppTheme.card.withValues(alpha: .12),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TextField(
                             controller: _searchController,
                             onChanged: (v) => setState(() => _searchQuery = v),
                             style: GoogleFonts.poppins(
-                              color: Colors.white,
+                              color: AppTheme.card,
                               fontSize: 13,
                             ),
                             decoration: InputDecoration(
@@ -411,7 +412,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: .06),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -426,7 +427,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: .1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(icon, color: color, size: 18),
@@ -480,7 +481,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -492,7 +493,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
             Container(
               height: 75,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: .1),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               ),
               child: Stack(
@@ -524,7 +525,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00B894).withOpacity(0.1),
+                          color: const Color(0xFF00B894).withValues(alpha: .1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -602,7 +603,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: .05),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -749,7 +750,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                      color: color.withValues(alpha: .1),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(icon, color: color, size: 28),
@@ -800,13 +801,13 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (r.teacherApproved)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00B894).withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF00B894).withOpacity(0.3)),
-                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00B894).withValues(alpha: .08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF00B894).withValues(alpha: .3)),
+                      ),
                     child: Row(
                       children: [
                         const Icon(Icons.verified, color: Color(0xFF00B894), size: 18),
@@ -895,7 +896,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

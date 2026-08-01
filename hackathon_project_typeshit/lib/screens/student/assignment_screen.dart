@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/assignment.dart';
+import '../../theme/app_theme.dart';
 
 class AssignmentScreen extends StatefulWidget {
   final List<Assignment> assignments;
@@ -148,15 +149,9 @@ class _AssignmentScreenState extends State<AssignmentScreen>
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.card,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+                boxShadow: AppTheme.cardShadow,
               ),
               child: Row(
                 children: [
@@ -300,15 +295,9 @@ class _AssignmentScreenState extends State<AssignmentScreen>
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.card,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          boxShadow: AppTheme.cardShadow,
         ),
         child: Column(
           children: [
@@ -334,7 +323,7 @@ class _AssignmentScreenState extends State<AssignmentScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                            color: color.withValues(alpha: .1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -407,7 +396,7 @@ class _AssignmentScreenState extends State<AssignmentScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00B894).withOpacity(0.1),
+                            color: color.withValues(alpha: .1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -503,7 +492,7 @@ class _AssignmentScreenState extends State<AssignmentScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00B894).withOpacity(0.1),
+                      color: const Color(0xFF00B894).withValues(alpha: .1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -636,7 +625,7 @@ class _AssignmentScreenState extends State<AssignmentScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../user_database.dart';
 
 class ClubsEventsScreen extends StatefulWidget {
@@ -33,7 +34,13 @@ class _ClubsEventsScreenState extends State<ClubsEventsScreen> {
         : db.clubEvents.where((e) => e.category == _selectedCategory).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Clubs & Events')),
+      backgroundColor: AppTheme.surface,
+      appBar: AppBar(
+        title: const Text('Clubs & Events'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Column(
         children: [
           _buildCategoryFilters(),
@@ -43,17 +50,21 @@ class _ClubsEventsScreenState extends State<ClubsEventsScreen> {
               itemCount: filteredEvents.length,
               itemBuilder: (context, index) {
                 final event = filteredEvents[index];
-                return Card(
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(
+                    color: AppTheme.card,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: AppTheme.cardShadow,
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(event.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 4),
-                        Text(event.description, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7))),
+                        Text(event.description, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: .7))),
                         const SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,7 +73,8 @@ class _ClubsEventsScreenState extends State<ClubsEventsScreen> {
                             ElevatedButton(
                               onPressed: () => db.toggleEventRegistration(event.id),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: event.isRegistered ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
+                                backgroundColor: event.isRegistered ? Theme.of(context).colorScheme.error : AppTheme.primary,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                               ),
                               child: Text(event.isRegistered ? 'Leave' : 'Register', style: const TextStyle(color: Colors.white)),
                             ),

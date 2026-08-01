@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 import 'user_database.dart';
 import 'home_screen.dart';
 import 'screens/student/student_dashboard.dart';
@@ -8,8 +9,8 @@ import 'screens/student/student_dashboard.dart';
 // Replace "XXX" below with your actual website/project name.
 // ---------------------------------------------------------------------------
 
-const String kWebsiteName = "XXX";
-const String kTagline = "A Codemasters X HXckers Project";
+const String kWebsiteName = "SafeSpace";
+const String kTagline = "Dashing campus collaboration for every student";
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -82,9 +83,9 @@ class _SignInPageState extends State<SignInPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF1F1147), // deep indigo
-              Color(0xFF6C5CE7), // vivid purple
-              Color(0xFF00CEC9), // teal accent
+              AppTheme.background,
+              AppTheme.primary,
+              AppTheme.accent,
             ],
           ),
         ),
@@ -114,7 +115,7 @@ class _SignInPageState extends State<SignInPage> {
                       fontSize: 14,
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: .8),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -125,15 +126,10 @@ class _SignInPageState extends State<SignInPage> {
                     width: 380,
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.97),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
+                      color: AppTheme.card.withValues(alpha: .95),
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: AppTheme.cardShadow,
+                      border: Border.all(color: Colors.white.withValues(alpha: .12)),
                     ),
                     child: Form(
                       key: _formKey,
@@ -222,24 +218,27 @@ class _SignInPageState extends State<SignInPage> {
                           const SizedBox(height: 28),
 
                           // Sign in button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _handleSignIn,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF6C5CE7),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                          HoverScale(
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 54,
+                              child: ElevatedButton(
+                                onPressed: _handleSignIn,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primary,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 6,
+                                  shadowColor: AppTheme.primary.withValues(alpha: .4),
                                 ),
-                                elevation: 4,
-                              ),
-                              child: const Text(
-                                "Sign In",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                                child: const Text(
+                                  "Sign In",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ),
@@ -264,17 +263,17 @@ class _SignInPageState extends State<SignInPage> {
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: const Color(0xFF6C5CE7)),
+      prefixIcon: Icon(icon, color: AppTheme.primary),
       suffixIcon: suffix,
       filled: true,
-      fillColor: const Color(0xFFF5F3FF),
+      fillColor: AppTheme.card.withValues(alpha: .08),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Color(0xFF6C5CE7), width: 1.5),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
     );

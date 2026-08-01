@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../models/assignment.dart';
 import '../../models/student.dart';
 import '../../models/calendar_event.dart';
@@ -140,7 +141,7 @@ class StudentDashboard extends StatelessWidget {
     final upcomingEvents = _calendarEvents.take(3).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppTheme.surface,
       body: CustomScrollView(
         slivers: [
           // ─── HEADER ───────────────────────────────────────
@@ -148,12 +149,12 @@ class StudentDashboard extends StatelessWidget {
             expandedHeight: 200,
             floating: false,
             pinned: true,
-            backgroundColor: const Color(0xFF00B894),
+            backgroundColor: AppTheme.success,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF00B894), Color(0xFF00CEC9)],
+                    colors: [AppTheme.success, AppTheme.accent],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -214,8 +215,34 @@ class StudentDashboard extends StatelessWidget {
                             _xpChip('⚡ ${student.xp} XP'),
                             const SizedBox(width: 8),
                             _xpChip('🏆 ${student.badges.length} Badges'),
-                            const SizedBox(width: 8),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
                             _xpChip('📚 ${pendingAssignments.length} Pending'),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: HoverScale(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const CampusChatScreen(),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                                  label: const Text('Go to Campus Chat'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.success,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -368,37 +395,32 @@ class StudentDashboard extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: const Color(0xFF2D3436),
+        color: AppTheme.primary,
       ),
     );
   }
 
   Widget _quickAction(BuildContext context, String emoji, String label, VoidCallback onTap) {
-    return GestureDetector(
+    return HoverScale(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: AppTheme.card,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: AppTheme.cardShadow,
         ),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(emoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF636E72),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.muted,
               ),
               textAlign: TextAlign.center,
             ),
@@ -490,7 +512,7 @@ class StudentDashboard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
+          colors: [AppTheme.primary, AppTheme.accent],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -505,7 +527,7 @@ class StudentDashboard extends StatelessWidget {
               Text(
                 '🏆 Discovery Quests',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.card,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -513,7 +535,7 @@ class StudentDashboard extends StatelessWidget {
               Text(
                 '$completed/$total Complete',
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: AppTheme.card.withValues(alpha: .75),
                   fontSize: 12,
                 ),
               ),
@@ -598,7 +620,7 @@ class StudentDashboard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF00B894).withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
