@@ -5,6 +5,7 @@ import 'assignment_manager_screen.dart';
 import 'resource_manager_screen.dart';
 import 'suggestion_review_screen.dart';
 import 'voice_report_review_screen.dart';
+import '../class_feed_screen.dart';
 
 // ---------------------------------------------------------------------------
 // TEACHER DASHBOARD
@@ -136,6 +137,22 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           const Text('Teacher Tools', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.ink)),
           const SizedBox(height: 12),
 
+          _ToolTile(
+            icon: Icons.dynamic_feed_rounded,
+            title: 'Class Feed',
+            subtitle: 'Post announcements and join class discussions',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ClassFeedScreen(
+                  currentUser: AppUser(
+                    name: widget.teacherName,
+                    password: '',
+                    role: 'Teacher',
+                  ),
+                ),
+              ),
+            ),
+          ),
           _ToolTile(
             icon: Icons.task_alt,
             title: 'Assignment Manager',

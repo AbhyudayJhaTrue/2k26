@@ -3,6 +3,7 @@ import 'theme/app_theme.dart';
 import 'user_database.dart';
 import 'home_screen.dart';
 import 'screens/student/student_dashboard.dart';
+import 'screens/teacher/teacher_dashboard_screen.dart';
 
 // ---------------------------------------------------------------------------
 // SIGN IN PAGE
@@ -53,12 +54,15 @@ class _SignInPageState extends State<SignInPage> {
         );
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => user.role == 'Student'
-                ? StudentDashboard(studentName: user.name)
-                : HomeScreen(
-                    name: user.name,
-                    role: user.role,
-                  ),
+            builder: (context) {
+              if (user.role == 'Student') {
+                return StudentDashboard(studentName: user.name);
+              }
+              if (user.role == 'Teacher') {
+                return TeacherDashboardScreen(teacherName: user.name);
+              }
+              return HomeScreen(name: user.name, role: user.role);
+            },
           ),
         );
       } else {

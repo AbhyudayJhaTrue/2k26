@@ -13,6 +13,7 @@ import 'suggestion_hub.dart';
 import 'discovery_quest_screen.dart';
 import 'campus_chat_screen.dart';
 import 'research_hub_screen.dart';
+import '../class_feed_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
   final String studentName;
@@ -319,7 +320,19 @@ class StudentDashboard extends StatelessWidget {
                           ),
                         );
                       }),
-                      _quickAction(context, '📢', 'Feed', () {}),
+                      _quickAction(context, '📢', 'Feed', () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ClassFeedScreen(
+                              currentUser: AppUser(
+                                name: studentName,
+                                password: '',
+                                role: 'Student',
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
                       _quickAction(context, '📋', 'Notices', () {}),
                     ],
                   ),
@@ -357,7 +370,20 @@ class StudentDashboard extends StatelessWidget {
                   // ─── ANNOUNCEMENTS ─────────────────────────
                   _sectionTitle('Latest Announcement'),
                   const SizedBox(height: 12),
-                  _announcementCard(),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ClassFeedScreen(
+                          currentUser: AppUser(
+                            name: studentName,
+                            password: '',
+                            role: 'Student',
+                          ),
+                        ),
+                      ),
+                    ),
+                    child: _announcementCard(),
+                  ),
 
                   const SizedBox(height: 32),
                 ],
